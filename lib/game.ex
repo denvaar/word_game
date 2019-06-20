@@ -5,13 +5,9 @@ defmodule Game do
 
   ## Examples
 
-      iex> Game.start()
-      %{clue: ["_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_"],
-        secret_word: ["D", "o", "m", "i", "n", "o", "'", "s", " ", "P", "i", "z", "z", "a"]}
-
+      process_id = Game.start()
   """
   def start() do
-    # hardcode the word to guess for simplicity
     secret_word =
       "Domino's Pizza"
       |> String.graphemes()
@@ -20,8 +16,9 @@ defmodule Game do
       secret_word
       |> Enum.map(fn(_letter) -> "_" end)
 
-    # game's initial state
-    %{secret_word: secret_word, clue: clue}
+    # Spawn a new process and run this module's loop
+    # function with the initial state
+    spawn(__MODULE__, :loop, [%{secret_word: secret_word, clue: clue}])
   end
 
   @doc"""
@@ -29,46 +26,49 @@ defmodule Game do
 
   ## Examples
 
-      iex> Game.guess(Game.start(), "z")
-      _ = "___________zz_\\n"
-      %{clue: ["_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "z", "z", "_"],
-        secret_word: ["D", "o", "m", "i", "n", "o", "'", "s", " ", "P", "i", "z", "z", "a"]}
+      iex> process_id = Game.start()
+      iex> Game.guess(process_id, "z")
+      {:guess, "z"}
   """
-  def guess(state, letter) do
-    # figure out a new game state
-    new_state = %{state | clue: update_clue(state, letter)}
-
-    # print the clue
-    new_state.clue |> List.to_string() |> IO.puts()
-
-    # need to return the updated state
-    # so that the client can use it on
-    # the next guess.
-    new_state
+  def guess(pid, letter) do
+    # send a message to the process identified by pid
+    send(pid, {:guess, letter})
   end
 
   defp update_clue(%{secret_word: secret_word, clue: clue}, letter) do
     secret_word
-    |> Enum.zip(clue) # [{"D", "_"}, {"o", _}, ...]
+    |> Enum.zip(clue)
     |> Enum.map(fn({secret_letter, clue_letter}) ->
       reveal_letter(secret_letter, clue_letter, letter)
     end)
   end
 
   defp reveal_letter(_secret, clue, _guess) when clue !== "_" do
-    # when letter has already been revealed then just return it
     clue
   end
 
   defp reveal_letter(secret, _clue, guess) when secret === guess do
-    # when the guess matches a letter,
-    # return the letter to replace "_"
     secret
   end
 
   defp reveal_letter(_secret, _clue, _guess) do
-    # based on the two functions above, the guess did not match
-    # so the clue remains unrevealed
     "_"
+  end
+
+  def loop(game_state) do
+    # monitor the process mailbox for messages
+    receive do
+      # when a message that matches this format is received,
+      # the code is executed
+      {:guess, letter} ->
+        new_game_state = %{game_state | clue: update_clue(game_state, letter)}
+
+        new_game_state.clue |> List.to_string() |> IO.puts()
+
+        # continue to wait for more messages, but
+        # with the updated game state
+        loop(new_game_state)
+    end
+    loop(game_state)
   end
 end
