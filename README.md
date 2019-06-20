@@ -22,6 +22,7 @@ The [second version](https://github.com/denvaar/word_game/tree/version-two/lib) 
 
 The [third version](https://github.com/denvaar/word_game/tree/version-three/lib) illustrates how the game can utilize functions from a standardized, battle-tested module, called `GenServer`. Using a `GenServer` for this game replaces the need to write our own recursive function to watch for messages. As a result, the code will be less error prone, and adhear to a standardized specification. The code is also refactored into separate modules, so that it's a bit more maintainable and clear.
 
+Want to make the game even better? I recommend Dave Thomas's course: https://codestool.coding-gnome.com/courses/elixir-for-programmers in which you will build an even better hangman-style game.
 
 ## Installation
 
