@@ -12,15 +12,15 @@ There's three versions of this app, each on it's own branch.
 
 ### Basic Version
 
-The [first version]() is a simple approach. All code is just placed into a single module. State is maintained by passing it to and fro. Sometimes this is fine, but in this application, it doesn't make sense. That's because some of the state should be considered private -- the secret word!
+The [first version](https://github.com/denvaar/word_game/tree/master/lib) is a simple approach. All code is just placed into a single module. State is maintained by passing it to and fro. Sometimes this is fine, but in this application, it doesn't make sense. That's because some of the state should be considered private -- the secret word!
 
 ### "Lil bit better" Version
 
-The [second version]() solves the problem of revealing data that should be considered private. The game state no longer needs to be passed around like in the first version. This is made possible by Elixir processes. State is maintained internally by utilizing a process mailbox and tail recursion. Now the player does not have to see the entire game state, but just the "clue" instead.
+The [second version](https://github.com/denvaar/word_game/tree/version-two/lib) solves the problem of revealing data that should be considered private. The game state no longer needs to be passed around like in the first version. This is made possible by Elixir processes. State is maintained internally by utilizing a process mailbox and tail recursion. Now the player does not have to see the entire game state, but just the "clue" instead.
 
 ### "Now We're Getting Somewhere" Version
 
-The [third version]() illustrates how the game can utilize functions from a standardized, battle-tested module, called `GenServer`. Using a `GenServer` for this game replaces the need to write our own recursive function to watch for messages. As a result, the code will be less error prone, and adhear to a standardized specification. The code is also refactored into separate modules, so that it's a bit more maintainable and clear.
+The [third version](https://github.com/denvaar/word_game/tree/version-three/lib) illustrates how the game can utilize functions from a standardized, battle-tested module, called `GenServer`. Using a `GenServer` for this game replaces the need to write our own recursive function to watch for messages. As a result, the code will be less error prone, and adhear to a standardized specification. The code is also refactored into separate modules, so that it's a bit more maintainable and clear.
 
 
 ## Installation
